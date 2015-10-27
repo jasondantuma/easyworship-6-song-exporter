@@ -11,6 +11,10 @@ class MainUi extends MainFrame {
     val txtDatabasePath = new TextField {
         columns = 50
     }
+
+    val txtOutputPath = new TextField {
+        columns = 50
+    }
     
     val file = new FileChooser
     
@@ -21,23 +25,42 @@ class MainUi extends MainFrame {
     title = UiStrings.en.appTitle
 
     contents = new BoxPanel(Orientation.Vertical){
+
+        // Source path
         contents += new BoxPanel(Orientation.Horizontal){
             contents += new Label( UiStrings.en.pathToDatabase )
             contents += txtDatabasePath
             
-            contents += Button ( UiStrings.en.search ){
+            contents += Button ( UiStrings.en.btnOpenFolder ){
 
                 file.fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
 
-                val result = file.showDialog(null,  UiStrings.en.selectFolder )
+                val result = file.showDialog( null,  UiStrings.en.selectFolder )
                 if (result == FileChooser.Result.Approve){
                     if (testForDatabaseFiles(file.selectedFile.getPath)){
                         txtDatabasePath.text = file.selectedFile.getPath
                     }
                 } else None
             }
-            
-        }
+        } // end Source Path
+
+        contents += Swing.VStrut(10)
+
+        // Destination Path
+        contents += new BoxPanel(Orientation.Horizontal){
+            contents += new Label( UiStrings.en.pathToOutput )
+            contents += txtOutputPath
+
+            contents += Button ( UiStrings.en.btnOpenFolder ){
+
+                file.fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
+
+                val result = file.showDialog( null,  UiStrings.en.selectFolder )
+                if (result == FileChooser.Result.Approve){
+                    txtOutputPath.text = file.selectedFile.getPath
+                } else None
+            }
+        } // end Destination Path
 
         contents += Swing.VStrut(10)
 
@@ -46,19 +69,21 @@ class MainUi extends MainFrame {
 
     }
 
-    def processRecords: Boolean = {
+    def testForDatabaseFiles(path: String): Boolean = {
+        val songDbFile = new File(path + "/Songs.db")
+
+        if (!songDbFile.exists()){
+            Dialog.showMessage(
+                null, UiStrings.en.ewDatabaseNotFoundPrefix + songDbFile.getParent, null, Dialog.Message.Error,null)
+            return false
+        } else {
+            Dialog.showMessage(null, UiStrings.en.ewDatabaseFound, null, Dialog.Message.Info,null)
+        }
+
         true
     }
 
-    def testForDatabaseFiles(path: String): Boolean = {
-        val songDbFile = new File(path + "/Songs.db")
-        if (!songDbFile.exists()){
-            Dialog.showMessage(null, UiStrings.en.ewDatabaseNotFound + songDbFile.getAbsolutePath, "Error", Dialog.Message.Error,null)
-            return false
-        } else {
-            Dialog.showMessage(null, "Database found!", "Success", Dialog.Message.Info,null)
-        }
-
+    def processRecords = {
         true
     }
 }

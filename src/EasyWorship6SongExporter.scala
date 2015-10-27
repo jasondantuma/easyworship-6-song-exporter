@@ -12,7 +12,7 @@ object EasyWorship6SongExporter {
         try {
             // Set the Look and Feel of the application to the operating
             // system's look and feel.
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
         }
 
         val ui = new MainUi
