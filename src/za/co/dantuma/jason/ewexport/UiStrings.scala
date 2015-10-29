@@ -14,5 +14,7 @@ object UiStrings {
         val ewDatabaseNotFoundPrefix = "EasyWorship database not found in "
         val ewDatabaseFoundPrefix = "Database Found with "
         val ewDatabaseFoundSuffex = " songs."
+        val pathToOutputBlank = "Please select an output path first."
+        val exportSuccess = "Exporting has completed successfully"
     }
 }

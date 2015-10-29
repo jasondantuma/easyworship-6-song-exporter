@@ -14,10 +14,12 @@ class MainUi extends ExporterUi {
 
     val txtDatabasePath = new TextField {
         columns = 50
+        editable = false
     }
 
     val txtOutputPath = new TextField {
         columns = 50
+        editable = false
     }
 
     val file = new FileChooser
@@ -32,8 +34,8 @@ class MainUi extends ExporterUi {
         file.fileSelectionMode = FileChooser.SelectionMode.DirectoriesOnly
 
         val result = file.showDialog( null,  UiStrings.en.selectFolder )
-        if (result == FileChooser.Result.Approve){
-            if (testForDatabaseFiles(file.selectedFile.getPath)){
+        if (result == FileChooser.Result.Approve) {
+            if (testForDatabaseFiles(file.selectedFile.getPath)) {
                 txtDatabasePath.text = file.selectedFile.getPath
                 exportButton.enabled = true
 
@@ -42,10 +44,11 @@ class MainUi extends ExporterUi {
                 Dialog.showMessage(null,
                     UiStrings.en.ewDatabaseFoundPrefix + Exporter.songCount + UiStrings.en.ewDatabaseFoundSuffex)
             }
-        } else {
-            txtDatabasePath.text = null
-            exportButton.enabled = false
-            Dialog.showMessage(null, UiStrings.en.ewDatabaseNotFoundPrefix + file.selectedFile.getPath)
+            else {
+                txtDatabasePath.text = null
+                exportButton.enabled = false
+                Dialog.showMessage(null, UiStrings.en.ewDatabaseNotFoundPrefix + file.selectedFile.getPath)
+            }
         }
     }
 
@@ -128,14 +131,23 @@ class MainUi extends ExporterUi {
     }
 
     def processRecords() = {
-
+        if (txtOutputPath.text.length != 0){
+            Exporter.setWordOutputPath(txtOutputPath.text)
+            Exporter.processRecords()
+        } else {
+            Dialog.showMessage(null, UiStrings.en.pathToOutputBlank, null, Dialog.Message.Error)
+        }
     }
 
-    def setProgressRecordCount(count: Int) = {
-        progressBar.max = count
+    def setProgressRecordCount(count: Long) = {
+        progressBar.max = count.toInt
     }
 
     def updateProgress(value: Int) = {
         progressBar.value = value
+    }
+
+    override def exportComplete {
+        Dialog.showMessage(null, UiStrings.en.exportSuccess)
     }
 }
