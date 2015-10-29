@@ -8,5 +8,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="scala-sdk-2.11.7 (2)" level="application" />
+    <orderEntry type="library" name="antlr-runtime-3.4" level="project" />
+    <orderEntry type="library" name="org-netbeans-swing-outline-RELEASE68" level="project" />
+    <orderEntry type="library" name="sqljet-1.1.10-javadoc" level="project" />
   </component>
 </module>

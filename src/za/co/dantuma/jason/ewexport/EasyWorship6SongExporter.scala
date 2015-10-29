@@ -1,3 +1,5 @@
+package za.co.dantuma.jason.ewexport
+
 import javax.swing.UIManager
 
 /**
@@ -9,11 +11,9 @@ import javax.swing.UIManager
 object EasyWorship6SongExporter {
     def main(args: Array[String]) {
 
-        try {
-            // Set the Look and Feel of the application to the operating
-            // system's look and feel.
+
+        try
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
-        }
 
         val ui = new MainUi
         ui.visible = true

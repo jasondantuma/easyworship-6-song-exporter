@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sqljet-1.1.10-javadoc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/sqljet-1.1.10.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/libs/sqljet-1.1.10-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
