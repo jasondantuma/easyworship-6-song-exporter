@@ -147,7 +147,7 @@ class MainUi extends ExporterUi {
         progressBar.value = value
     }
 
-    override def exportComplete {
+    override def exportComplete() {
         Dialog.showMessage(null, UiStrings.en.exportSuccess)
     }
 }

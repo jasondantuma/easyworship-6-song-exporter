@@ -85,6 +85,8 @@ class Exporter(handler: ExporterUi) {
 
         songsDb.commit()
         wordsDb.commit()
+
+        handler.exportComplete()
     }
 
 }

@@ -9,5 +9,5 @@ import scala.swing._
 trait ExporterUi extends MainFrame {
     def setProgressRecordCount(count: Long)
     def updateProgress(value: Int)
-    def exportComplete
+    def exportComplete()
 }
