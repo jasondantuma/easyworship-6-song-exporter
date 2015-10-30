@@ -10,7 +10,7 @@ import scala.swing.Dialog
 /**
  * Created by Jason Dantuma on 2015/10/28.
  */
-class Exporter(handler: ExporterUi) {
+class Exporter(handler: ExporterUi) extends Thread {
 
     var songsFile: File                 = null
     var wordsFile: File                 = null
@@ -49,7 +49,6 @@ class Exporter(handler: ExporterUi) {
 
         var count: Int = 0
         do {
-
             handler.updateProgress(count)
             val songId = songTable.getInteger("rowid")
             val songTitle = songTable.getString("title")
@@ -60,15 +59,16 @@ class Exporter(handler: ExporterUi) {
 
                     val songFilename = songTitle.replaceAll("[\\/?!]", "")
 
-                    println(songFilename)
+//                    println(songFilename)
                     val outputFile = new File(wordsOutputPath + "/" + songFilename + ".rtf")
-                    println(outputFile.getAbsolutePath)
+//                    println(outputFile.getAbsolutePath)
 
                     outputFile.createNewFile()
                     val outWriter = new FileOutputStream(outputFile)
                     outWriter.write(words.getBytes)
                     outWriter.close()
                     count += 1
+                    println(count)
                     songFound = true
                 }
             } while (wordTable.next())
@@ -89,4 +89,7 @@ class Exporter(handler: ExporterUi) {
         handler.exportComplete()
     }
 
+    override def run(): Unit = {
+        processRecords()
+    }
 }

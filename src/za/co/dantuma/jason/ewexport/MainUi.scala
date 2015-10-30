@@ -66,7 +66,6 @@ class MainUi extends ExporterUi {
         max = 100
         min = 0
         value = 0
-        visible = false
     }
 
 
@@ -133,7 +132,7 @@ class MainUi extends ExporterUi {
     def processRecords() = {
         if (txtOutputPath.text.length != 0){
             Exporter.setWordOutputPath(txtOutputPath.text)
-            Exporter.processRecords()
+            Exporter.start()
         } else {
             Dialog.showMessage(null, UiStrings.en.pathToOutputBlank, null, Dialog.Message.Error)
         }
