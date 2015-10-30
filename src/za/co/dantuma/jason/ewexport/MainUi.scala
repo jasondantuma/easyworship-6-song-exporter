@@ -2,6 +2,8 @@ package za.co.dantuma.jason.ewexport
 
 /**
  * Created by Jason Dantuma on 2015/10/26.
+ *
+ * Main UI for the application
  */
 
 import java.io.File
@@ -21,6 +23,14 @@ class MainUi extends ExporterUi {
         columns = 50
         editable = false
     }
+
+    val radioRichText = new RadioButton("Rich Text"){selected = true}
+    val radioPlainText = new RadioButton("Plain Text")
+    val radioButtons = new BoxPanel(Orientation.Horizontal){
+        contents += radioRichText
+        contents += radioPlainText
+    }
+    val outputTypeRadio = new ButtonGroup (radioRichText,radioPlainText)
 
     val file = new FileChooser
 
@@ -71,9 +81,6 @@ class MainUi extends ExporterUi {
 
 
     // ======= END GLOBAL VARS
-
-    title = UiStrings.en.appTitle
-
     contents = new GridBagPanel {
         def constraints(x: Int, y: Int,
                         gridwidth: Int = 1, gridheight: Int = 1,
@@ -107,15 +114,17 @@ class MainUi extends ExporterUi {
         add(Swing.HStrut(10), constraints(3,2))
 
         //export button
+        add(radioButtons, constraints(2,3))
         add(exportButton, constraints(4,3))
 
         border = Swing.EmptyBorder(10)
 
         add(progressBar, constraints(0,5,5))
-
     }
 
     centerOnScreen() // lets center the window on the screen now
+    resizable = false
+    title = UiStrings.en.appTitle
 
     def testForDatabaseFiles(path: String): Boolean = {
         val songDbFile = new File(path + "/Songs.db")
@@ -132,6 +141,7 @@ class MainUi extends ExporterUi {
     def processRecords() = {
         if (txtOutputPath.text.length != 0){
             Exporter.setWordOutputPath(txtOutputPath.text)
+            Exporter.setOutputRichText(radioRichText.selected)
             Exporter.start()
         } else {
             Dialog.showMessage(null, UiStrings.en.pathToOutputBlank, null, Dialog.Message.Error)

@@ -1,6 +1,7 @@
 package za.co.dantuma.jason.ewexport
 
-import java.io.{FileOutputStream, File}
+import java.io.{ByteArrayInputStream, FileOutputStream, File}
+import javax.swing.text.rtf.RTFEditorKit
 
 import org.tmatesoft.sqljet.core._
 import org.tmatesoft.sqljet.core.table._
@@ -9,6 +10,10 @@ import scala.swing.Dialog
 
 /**
  * Created by Jason Dantuma on 2015/10/28.
+ *
+ * The exporter. Receives a handler to send progress updates to
+ *
+ * @param handler The ExporterUi handler to send updates to
  */
 class Exporter(handler: ExporterUi) extends Thread {
 
@@ -17,6 +22,7 @@ class Exporter(handler: ExporterUi) extends Thread {
     var songsDb: SqlJetDb               = null
     var wordsDb: SqlJetDb               = null
     var wordsOutputPath: String         = null
+    var exportRichText: Boolean         = true
 
     def setup(sourcePath: String) ={
         songsFile = new File(sourcePath + "/Songs.db")
@@ -60,12 +66,15 @@ class Exporter(handler: ExporterUi) extends Thread {
                     val songFilename = songTitle.replaceAll("[\\/?!]", "")
 
 //                    println(songFilename)
-                    val outputFile = new File(wordsOutputPath + "/" + songFilename + ".rtf")
+                    val outputFile = new File(wordsOutputPath + "/" + songFilename + (if (exportRichText) ".rtf" else ".txt"))
 //                    println(outputFile.getAbsolutePath)
 
                     outputFile.createNewFile()
                     val outWriter = new FileOutputStream(outputFile)
-                    outWriter.write(words.getBytes)
+                    if (exportRichText)
+                        outWriter.write(words.getBytes)
+                    else
+                        outWriter.write(rtfToPlainText(words).getBytes)
                     outWriter.close()
                     count += 1
                     println(count)
@@ -91,5 +100,16 @@ class Exporter(handler: ExporterUi) extends Thread {
 
     override def run(): Unit = {
         processRecords()
+    }
+
+    def setOutputRichText(richText: Boolean) = {
+        exportRichText = richText
+    }
+
+    private def rtfToPlainText(string: String): String = {
+        val rtfToolkit: RTFEditorKit = new RTFEditorKit
+        val doc = rtfToolkit.createDefaultDocument()
+        rtfToolkit.read(new ByteArrayInputStream(string.getBytes), doc, 0)
+        doc.getText(0, doc.getLength) // return
     }
 }
