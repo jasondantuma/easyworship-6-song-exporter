@@ -24,12 +24,17 @@ class Exporter(handler: ExporterUi) extends Thread {
     var wordsOutputPath: String         = null
     var exportRichText: Boolean         = true
 
-    def setup(sourcePath: String) ={
+    def setup(sourcePath: String): Boolean = {
         songsFile = new File(sourcePath + "/Songs.db")
         wordsFile = new File(sourcePath + "/SongWords.db")
 
+        if (!songsFile.exists && !wordsFile.exists){
+            return false
+        }
+
         songsDb = SqlJetDb.open(songsFile, true)
         wordsDb = SqlJetDb.open(wordsFile, true)
+        true
     }
 
     def songCount: Long = {
@@ -49,7 +54,6 @@ class Exporter(handler: ExporterUi) extends Thread {
         songsDb.beginTransaction(SqlJetTransactionMode.READ_ONLY)
         wordsDb.beginTransaction(SqlJetTransactionMode.READ_ONLY)
 
-
         val songTable = songsDb.getTable("song").open()
         val wordTable = wordsDb.getTable("word").open()
 
@@ -59,15 +63,15 @@ class Exporter(handler: ExporterUi) extends Thread {
             val songId = songTable.getInteger("rowid")
             val songTitle = songTable.getString("title")
             var songFound = false
-            do{
+            do {
                 if (wordTable.getInteger("song_id") == songId && !songFound){
                     val words: String = wordTable.getString("words")
 
                     val songFilename = songTitle.replaceAll("[\\/?!]", "")
 
-//                    println(songFilename)
-                    val outputFile = new File(wordsOutputPath + "/" + songFilename + (if (exportRichText) ".rtf" else ".txt"))
-//                    println(outputFile.getAbsolutePath)
+                    println(songFilename)
+                    val outputFile =
+                        new File(wordsOutputPath + "/" + songFilename + (if (exportRichText) ".rtf" else ".txt"))
 
                     outputFile.createNewFile()
                     val outWriter = new FileOutputStream(outputFile)
@@ -77,7 +81,6 @@ class Exporter(handler: ExporterUi) extends Thread {
                         outWriter.write(rtfToPlainText(words).getBytes)
                     outWriter.close()
                     count += 1
-                    println(count)
                     songFound = true
                 }
             } while (wordTable.next())

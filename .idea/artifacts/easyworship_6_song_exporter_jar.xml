@@ -8,10 +8,7 @@
       <element id="module-output" name="easyworship-6-song-exporter" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/org-netbeans-swing-outline-RELEASE68.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/antlr-runtime-3.4.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="C:/Program Files (x86)/scala/lib/scala-actors-migration_2.11-1.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="C:/Program Files (x86)/scala/lib/scala-library.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="C:/Program Files (x86)/scala/lib/scala-parser-combinators_2.11-1.0.4.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="C:/Program Files (x86)/scala/lib/scala-reflect.jar" path-in-jar="/" />
       <element id="extracted-dir" path="C:/Program Files (x86)/scala/lib/scala-swing_2.11-1.0.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/sqljet-1.1.10.jar" path-in-jar="/" />
     </root>

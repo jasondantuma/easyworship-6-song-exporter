@@ -24,7 +24,7 @@ class MainUi extends ExporterUi {
         editable = false
     }
 
-    val radioRichText = new RadioButton("Rich Text"){selected = true}
+    val radioRichText = new RadioButton("Rich Text (Maintains Formatting)"){selected = true}
     val radioPlainText = new RadioButton("Plain Text")
     val radioButtons = new BoxPanel(Orientation.Horizontal){
         contents += radioRichText
@@ -45,12 +45,12 @@ class MainUi extends ExporterUi {
 
         val result = file.showDialog( null,  UiStrings.en.selectFolder )
         if (result == FileChooser.Result.Approve) {
-            if (testForDatabaseFiles(file.selectedFile.getPath)) {
+
+            // Exporter .setup does the database file check for us now, and returns false if its not found
+            if (Exporter.setup(file.selectedFile.getPath)) {
+
                 txtDatabasePath.text = file.selectedFile.getPath
                 exportButton.enabled = true
-
-                Exporter.setup(file.selectedFile.getPath)
-
                 Dialog.showMessage(null,
                     UiStrings.en.ewDatabaseFoundPrefix + Exporter.songCount + UiStrings.en.ewDatabaseFoundSuffex)
             }
@@ -125,18 +125,6 @@ class MainUi extends ExporterUi {
     centerOnScreen() // lets center the window on the screen now
     resizable = false
     title = UiStrings.en.appTitle
-
-    def testForDatabaseFiles(path: String): Boolean = {
-        val songDbFile = new File(path + "/Songs.db")
-
-        if (!songDbFile.exists()){
-            Dialog.showMessage(
-                null, UiStrings.en.ewDatabaseNotFoundPrefix + songDbFile.getParent, null, Dialog.Message.Error,null)
-            return false
-        }
-
-        true
-    }
 
     def processRecords() = {
         if (txtOutputPath.text.length != 0){
