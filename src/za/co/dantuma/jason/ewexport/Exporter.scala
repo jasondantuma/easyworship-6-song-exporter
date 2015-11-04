@@ -113,6 +113,6 @@ class Exporter(handler: ExporterUi) extends Thread {
         val rtfToolkit: RTFEditorKit = new RTFEditorKit
         val doc = rtfToolkit.createDefaultDocument()
         rtfToolkit.read(new ByteArrayInputStream(string.getBytes), doc, 0)
-        doc.getText(0, doc.getLength) // return
+        doc.getText(0, doc.getLength).replaceAll("\\n", "\r\n") // return
     }
 }

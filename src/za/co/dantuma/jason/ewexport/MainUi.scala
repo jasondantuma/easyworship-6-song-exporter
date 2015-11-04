@@ -6,8 +6,6 @@ package za.co.dantuma.jason.ewexport
  * Main UI for the application
  */
 
-import java.io.File
-
 import scala.swing._
 
 class MainUi extends ExporterUi {
@@ -145,6 +143,7 @@ class MainUi extends ExporterUi {
     }
 
     override def exportComplete() {
+        progressBar.value = progressBar.max
         Dialog.showMessage(null, UiStrings.en.exportSuccess)
     }
 }
