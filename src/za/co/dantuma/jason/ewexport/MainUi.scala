@@ -5,20 +5,19 @@ package za.co.dantuma.jason.ewexport
  *
  * Main UI for the application
  */
-
 import scala.swing._
 
 class MainUi extends ExporterUi {
 
-    val Exporter = new Exporter(this)
+    private var Exporter = new Exporter(this)
 
     val txtDatabasePath = new TextField {
-        columns = 50
+//        columns = 50
         editable = false
     }
 
     val txtOutputPath = new TextField {
-        columns = 50
+//        columns = 50
         editable = false
     }
 
@@ -81,9 +80,9 @@ class MainUi extends ExporterUi {
     // ======= END GLOBAL VARS
     contents = new GridBagPanel {
         def constraints(x: Int, y: Int,
+                        fill: GridBagPanel.Fill.Value = GridBagPanel.Fill.None,
                         gridwidth: Int = 1, gridheight: Int = 1,
-                        weightx: Double = 0.0, weighty: Double = 0.0,
-                        fill: GridBagPanel.Fill.Value = GridBagPanel.Fill.Horizontal)
+                        weightx: Double = 0.0, weighty: Double = 0.0)
         : Constraints = {
             val c = new Constraints
             c.gridx = x
@@ -98,13 +97,13 @@ class MainUi extends ExporterUi {
 
         // Source
         add(new Label( UiStrings.en.pathToDatabase, null, Alignment.Right), constraints(0,0))
-        add(txtDatabasePath, constraints(2,0))
-        add(btnOpenSourceFolder, constraints(4,0))
+        add(txtDatabasePath, constraints(2,0,GridBagPanel.Fill.Horizontal,1,1,1,1))
+        add(btnOpenSourceFolder, constraints(4,0,GridBagPanel.Fill.Horizontal))
 
         //Destination
         add(new Label( UiStrings.en.pathToOutput, null, Alignment.Right), constraints(0,1))
-        add(txtOutputPath, constraints(2,1))
-        add(btnOpenDestinationFolder, constraints(4,1))
+        add(txtOutputPath, constraints(2,1, GridBagPanel.Fill.Horizontal,1,1,1,1))
+        add(btnOpenDestinationFolder, constraints(4,1,GridBagPanel.Fill.Horizontal))
 
         add(Swing.VStrut(10), constraints(0,2))
         add(Swing.VStrut(10), constraints(0,4))
@@ -117,16 +116,17 @@ class MainUi extends ExporterUi {
 
         border = Swing.EmptyBorder(10)
 
-        add(progressBar, constraints(0,5,5))
+        add(progressBar, constraints(0,5,GridBagPanel.Fill.Horizontal, 5))
+
     }
 
     centerOnScreen() // lets center the window on the screen now
-    resizable = false
     title = UiStrings.en.appTitle
+    minimumSize = size
 
     def processRecords() = {
-        if (txtOutputPath.text.length != 0){
-            Exporter.setWordOutputPath(txtOutputPath.text)
+        if (txtOutputPath.text.nonEmpty){
+            Exporter.setExportPath(txtOutputPath.text)
             Exporter.setOutputRichText(radioRichText.selected)
             Exporter.start()
         } else {
@@ -143,7 +143,16 @@ class MainUi extends ExporterUi {
     }
 
     override def exportComplete() {
-        progressBar.value = progressBar.max
+        progressBar.indeterminate = true
         Dialog.showMessage(null, UiStrings.en.exportSuccess)
+
+        // reset the application
+        Exporter = new Exporter(this)
+        exportButton.enabled = false
+        txtDatabasePath.text = ""
+        txtOutputPath.text = ""
+        progressBar.value = 0
+        progressBar.indeterminate = false
+
     }
 }
