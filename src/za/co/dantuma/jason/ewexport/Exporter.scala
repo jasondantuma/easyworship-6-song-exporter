@@ -80,7 +80,7 @@ class Exporter(handler: ExporterUi) extends Thread {
                 if (wordTable.getInteger("song_id") == songId && !songFound){
                     val words: String = wordTable.getString("words")
 
-                    val songFilename = songTitle.replaceAll("[\\/?!:;]", "") // remove illegal characters from filenames
+                    val songFilename = songTitle.replaceAll("[\\/?!:;@#%&*{}<>$`=]", "") // remove illegal characters from filenames
 
                     println(songFilename)
                     val outputFile =

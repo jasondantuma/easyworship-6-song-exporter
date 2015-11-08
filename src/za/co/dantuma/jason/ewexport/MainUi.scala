@@ -6,27 +6,29 @@ package za.co.dantuma.jason.ewexport
  * Main UI for the application
  */
 import scala.swing._
+import scala.swing.Color
 
 class MainUi extends ExporterUi {
 
     private var Exporter = new Exporter(this)
 
     val txtDatabasePath = new TextField {
-//        columns = 50
         editable = false
     }
 
     val txtOutputPath = new TextField {
-//        columns = 50
         editable = false
     }
 
     val radioRichText = new RadioButton("Rich Text (Maintains Formatting)"){selected = true}
+
     val radioPlainText = new RadioButton("Plain Text")
+
     val radioButtons = new BoxPanel(Orientation.Horizontal){
         contents += radioRichText
         contents += radioPlainText
     }
+
     val outputTypeRadio = new ButtonGroup (radioRichText,radioPlainText)
 
     val file = new FileChooser
@@ -74,8 +76,6 @@ class MainUi extends ExporterUi {
         min = 0
         value = 0
     }
-
-
 
     // ======= END GLOBAL VARS
     contents = new GridBagPanel {
