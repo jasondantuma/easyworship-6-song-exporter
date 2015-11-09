@@ -6,15 +6,13 @@ import javax.swing.text.rtf.RTFEditorKit
 import org.tmatesoft.sqljet.core._
 import org.tmatesoft.sqljet.core.table._
 
-import scala.swing.Dialog
-
 /**
- * Created by Jason Dantuma on 2015/10/28.
- *
- * The exporter. Receives a handler to send progress updates to
- *
- * @param handler The ExporterUi handler to send updates to
- */
+  * Created by Jason Dantuma on 2015/10/28.
+  *
+  * The exporter. Receives a handler to send progress updates to
+  *
+  * @param handler The ExporterUi handler to send updates to
+  */
 class Exporter(handler: ExporterUi) extends Thread {
 
     private var songsFile: File                 = null
@@ -71,47 +69,24 @@ class Exporter(handler: ExporterUi) extends Thread {
         var count: Int = 0
         do {
             handler.updateProgress(count)
-            val songId = songTable.getInteger("rowid")
-            val songTitle = songTable.getString("title")
-            var songFound = false
+            var songTitle: String = null
 
-            // for some reason couldn't select lyrics based on id. using loop until id's match
             do {
-                if (wordTable.getInteger("song_id") == songId && !songFound){
-                    val words: String = wordTable.getString("words")
+                if (songTable.getInteger("rowid") == wordTable.getInteger("song_id"))
+                    songTitle = songTable.getString("title")
+//                    println(songTable.getRowValues)
+            } while (songTable.next() && songTitle == null)
 
-                    val songFilename = songTitle.replaceAll("[\\/?!:;@#%&*{}<>$`=]", "") // remove illegal characters from filenames
+            songTable.first()
 
-                    println(songFilename)
-                    val outputFile =
-                        new File(exportPath + "/" + songFilename + (if (exportRichText) ".rtf" else ".txt"))
+            val words: String = wordTable.getString("words")
+            println(s"song title: $songTitle")
 
-                    outputFile.createNewFile()
-                    val outWriter = new FileOutputStream(outputFile)
-                    try {
-                        if (exportRichText)
-                            outWriter.write(words.getBytes)
-                        else
-                            outWriter.write(rtfToPlainText(words).getBytes)
-                    } catch {
-                        case io: java.io.IOException =>
-                            println(s"Could not export $songTitle, File Exception Error")
-                    }
-                    outWriter.close()
-                    count += 1
-                    songFound = true
-                }
-            } while (wordTable.next())
+            if (songTitle != null)
+                writeFile(songTitle, words, exportRichText)
 
-            if (!songFound){
-                println(s"WORDS NOT FOUND FOR $songTitle")
-            }
-
-            wordTable.first() // go back to first record
-        } while (songTable.next())
-
-        wordTable.close()
-        songTable.close()
+            count += 1
+        } while (wordTable.next())
 
         // finish the transactions
         songsDb.commit()
@@ -137,5 +112,46 @@ class Exporter(handler: ExporterUi) extends Thread {
         val doc = rtfToolkit.createDefaultDocument()
         rtfToolkit.read(new ByteArrayInputStream(string.getBytes), doc, 0)
         doc.getText(0, doc.getLength).replaceAll("\\n", "\r\n") // return
+    }
+
+    private def cleanFilename(string: String): String = {
+        // remove illegal characters from filenames
+        println(s"input filename $string")
+
+//        if (string != null)
+            string.replaceAll("[\\/?!:;@#%&*{}<>$`=]", "")
+//        else
+//            s"untitled"
+    }
+
+    private def writeFile(filename: String, contents: String, richText: Boolean) = {
+        var outputFile: File = null
+        var nameCollisionCounter = 0
+
+        while (outputFile == null || outputFile.exists()){
+            outputFile = new File(
+                s"$exportPath/" +
+                    cleanFilename(filename) +
+                    (if (nameCollisionCounter > 0) s" ($nameCollisionCounter)" else "")+
+                    (if (richText) ".rtf" else ".txt")
+            )
+            nameCollisionCounter = nameCollisionCounter + 1
+        }
+
+        outputFile.createNewFile()
+        val outWriter = new FileOutputStream(outputFile)
+
+        try {
+            if (richText)
+                outWriter.write(contents.getBytes)
+            else
+                outWriter.write(rtfToPlainText(contents).getBytes)
+        } catch {
+            case io: java.io.IOException =>
+                println(s"Could not write $filename, " + io.getMessage)
+                println(io.getStackTrace)
+        }
+
+        outWriter.close()
     }
 }
