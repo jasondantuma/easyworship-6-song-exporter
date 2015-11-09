@@ -10,4 +10,5 @@ trait ExporterUi extends MainFrame {
     def setProgressRecordCount(count: Long)
     def updateProgress(value: Int)
     def exportComplete()
+    def exportFailed(reason: String)
 }

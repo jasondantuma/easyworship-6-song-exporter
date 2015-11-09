@@ -155,4 +155,8 @@ class MainUi extends ExporterUi {
         progressBar.indeterminate = false
 
     }
+
+    override def exportFailed(reason: String): Unit = {
+        Dialog.showMessage(null, reason, "Error", Dialog.Message.Error)
+    }
 }

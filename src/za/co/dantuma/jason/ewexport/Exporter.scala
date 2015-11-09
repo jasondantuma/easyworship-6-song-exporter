@@ -22,6 +22,10 @@ class Exporter(handler: ExporterUi) extends Thread {
     private var exportPath: String              = null
     private var exportRichText: Boolean         = true
 
+    /**
+      * Setup the exporter
+      * @param sourcePath Path to EasyWorship 6 database files
+      * */
     def setup(sourcePath: String): Boolean = {
         songsFile = new File(s"$sourcePath/Songs.db")
         wordsFile = new File(s"$sourcePath/SongWords.db")
@@ -33,6 +37,9 @@ class Exporter(handler: ExporterUi) extends Thread {
         true
     }
 
+    override def run(): Unit = {
+        processRecords()
+    }
 
     /**
       * Get the number of records in the song database
@@ -49,12 +56,13 @@ class Exporter(handler: ExporterUi) extends Thread {
 
     /**
       * Set the output path for exporting
+      * @param path The path to export to.
       * */
     def setExportPath(path:String) = {
         exportPath = path
     }
 
-    def processRecords() = {
+    private def processRecords() = {
         handler.setProgressRecordCount(songCount)
 
         songsDb = SqlJetDb.open(songsFile, true)
@@ -74,8 +82,7 @@ class Exporter(handler: ExporterUi) extends Thread {
             do {
                 if (songTable.getInteger("rowid") == wordTable.getInteger("song_id"))
                     songTitle = songTable.getString("title")
-//                    println(songTable.getRowValues)
-            } while (songTable.next() && songTitle == null)
+            } while (songTable.next() && songTitle == null) // only move on if song is not found
 
             songTable.first()
 
@@ -99,10 +106,9 @@ class Exporter(handler: ExporterUi) extends Thread {
         handler.exportComplete()
     }
 
-    override def run(): Unit = {
-        processRecords()
-    }
-
+    /**
+      * Set to export in rich text (.rtf) or plain text (.txt)
+      * */
     def setOutputRichText(richText: Boolean) = {
         exportRichText = richText
     }
@@ -116,26 +122,22 @@ class Exporter(handler: ExporterUi) extends Thread {
 
     private def cleanFilename(string: String): String = {
         // remove illegal characters from filenames
-        println(s"input filename $string")
-
-//        if (string != null)
-            string.replaceAll("[\\/?!:;@#%&*{}<>$`=]", "")
-//        else
-//            s"untitled"
+        string.replaceAll("[\\/?!:;@#%&*{}<>$`=]", "")
     }
 
     private def writeFile(filename: String, contents: String, richText: Boolean) = {
         var outputFile: File = null
         var nameCollisionCounter = 0
 
+        // a simple loop that makes sure we don't overwrite an existing file. runs once if no name collisions happen
         while (outputFile == null || outputFile.exists()){
             outputFile = new File(
-                s"$exportPath/" +
-                    cleanFilename(filename) +
-                    (if (nameCollisionCounter > 0) s" ($nameCollisionCounter)" else "")+
-                    (if (richText) ".rtf" else ".txt")
+                s"$exportPath/" + // output path
+                    cleanFilename(filename) + // append filename
+                    (if (nameCollisionCounter > 0) s" ($nameCollisionCounter)" else "") + // append file increment
+                    (if (richText) ".rtf" else ".txt") // append file extention
             )
-            nameCollisionCounter = nameCollisionCounter + 1
+            nameCollisionCounter += 1
         }
 
         outputFile.createNewFile()
